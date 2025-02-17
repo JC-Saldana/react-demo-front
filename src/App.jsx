@@ -1,19 +1,37 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { fetchTrips } from './api/trips'
 import './App.css'
 
 function App() {
   const [trips, setTrips] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState(null)
+
+  const setInitialTrips = async () => {
+    setLoading(true)
+    setError(null)
+    try {
+      const trips = await fetchTrips()
+      setTrips(trips)
+    } catch (error) {
+      setError(error)
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    axios.get(`${import.meta.env.VITE_BACK_URL}/trips`)
-      .then(res => setTrips(res.data))
+    setInitialTrips()
   }, [])
 
   return (
-    <>
-      {trips.map(trip => <p key={trip.id}>{trip.location}</p>)}
-    </>
+    <div className='trips-column'>
+      <button onClick={setInitialTrips}>
+        {loading ? "Loading..." : "Reload trips"}
+      </button>
+      {trips && !loading && !error && trips.map(trip => <p key={trip.id}>{trip.location}</p>)}
+      {error && <p>{error.message}</p>}
+    </div>
   )
 }
 
