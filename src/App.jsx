@@ -6,7 +6,7 @@ function App() {
   const [trips, setTrips] = useState([])
 
   useEffect(() => {
-    axios.get("http://localhost:5005/trips")
+    axios.get(`${import.meta.env.VITE_BACK_URL}/trips`)
       .then(res => setTrips(res.data))
   }, [])
 
